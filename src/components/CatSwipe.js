@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Typography, Card, CardMedia, CardContent, IconButton, Snackbar, Alert } from '@mui/material';
+import { Box, Typography, Card, CardMedia, CardContent, IconButton, Snackbar, Alert, Tabs, Tab, List, ListItem, ListItemAvatar, Avatar, ListItemText, Divider } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CloseIcon from '@mui/icons-material/Close';
+import ChatIcon from '@mui/icons-material/Chat';
 import { useSpring, animated } from '@react-spring/web';
+import Messages from './Messages';
 
 const cats = [
   {
@@ -120,6 +122,8 @@ const CatSwipe = () => {
   const [likedCats, setLikedCats] = useState([]);
   const [showMessage, setShowMessage] = useState(false);
   const [currentMessage, setCurrentMessage] = useState('');
+  const [activeTab, setActiveTab] = useState(0);
+  const [selectedCat, setSelectedCat] = useState(null);
 
   const currentCat = cats[currentIndex];
 
@@ -171,99 +175,146 @@ const CatSwipe = () => {
         height: '80vh',
       }}
     >
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-        {currentIndex === cats.length - 1 ? 'Last Cat!' : `Cat ${currentIndex + 1} of ${cats.length}`}
-      </Typography>
-      
-      <Box sx={{ position: 'relative', width: '100%', maxWidth: 345, height: '100%' }}>
-        <AnimatedCard
-          style={{
-            transform: x.to((x) => `translateX(${x}px) rotate(${rotate}deg)`),
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-          }}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            borderRadius: 3,
-            boxShadow: 3,
-          }}
-        >
-          <CardMedia
-            component="img"
-            height="60%"
-            image={currentCat.imageUrl}
-            alt={currentCat.name}
-            sx={{ objectFit: 'cover' }}
-          />
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-              {currentCat.name}, {currentCat.age}y
-            </Typography>
-            <Typography variant="body1" color="text.secondary" gutterBottom>
-              {currentCat.breed}
-            </Typography>
-            <Typography variant="body2" paragraph>
-              {currentCat.bio}
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
-              <IconButton
-                onClick={handlePass}
-                sx={{
-                  bgcolor: 'error.main',
-                  color: 'white',
-                  '&:hover': { bgcolor: 'error.dark' },
-                  width: 60,
-                  height: 60,
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-              <IconButton
-                onClick={handleLike}
-                sx={{
-                  bgcolor: 'primary.main',
-                  color: 'white',
-                  '&:hover': { bgcolor: 'primary.dark' },
-                  width: 60,
-                  height: 60,
-                }}
-              >
-                <FavoriteIcon />
-              </IconButton>
-            </Box>
-          </CardContent>
-        </AnimatedCard>
-      </Box>
-
-      {likedCats.length > 0 && (
-        <Typography variant="body1" sx={{ mt: 2, color: 'text.secondary' }}>
-          You've liked {likedCats.length} cat{likedCats.length !== 1 ? 's' : ''}!
-        </Typography>
-      )}
-
-      <Snackbar
-        open={showMessage}
-        autoHideDuration={4000}
-        onClose={handleCloseMessage}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      <Tabs
+        value={activeTab}
+        onChange={(e, newValue) => setActiveTab(newValue)}
+        sx={{ mb: 2 }}
       >
-        <Alert 
-          onClose={handleCloseMessage} 
-          severity="success" 
-          sx={{ 
-            width: '100%',
-            bgcolor: 'primary.light',
-            color: 'primary.contrastText',
-            '& .MuiAlert-icon': {
-              color: 'primary.contrastText'
-            }
-          }}
-        >
-          {currentMessage}
-        </Alert>
-      </Snackbar>
+        <Tab icon={<ChatIcon />} label="Swipe" />
+        <Tab icon={<ChatIcon />} label="Chat" />
+      </Tabs>
+
+      {activeTab === 0 ? (
+        <>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            {currentIndex === cats.length - 1 ? 'Last Cat!' : `Cat ${currentIndex + 1} of ${cats.length}`}
+          </Typography>
+          
+          <Box sx={{ position: 'relative', width: '100%', maxWidth: 345, height: '100%' }}>
+            <AnimatedCard
+              style={{
+                transform: x.to((x) => `translateX(${x}px) rotate(${rotate}deg)`),
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+              }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: 3,
+                boxShadow: 3,
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="60%"
+                image={currentCat.imageUrl}
+                alt={currentCat.name}
+                sx={{ objectFit: 'cover' }}
+              />
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
+                  {currentCat.name}, {currentCat.age}y
+                </Typography>
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  {currentCat.breed}
+                </Typography>
+                <Typography variant="body2" paragraph>
+                  {currentCat.bio}
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
+                  <IconButton
+                    onClick={handlePass}
+                    sx={{
+                      bgcolor: 'error.main',
+                      color: 'white',
+                      '&:hover': { bgcolor: 'error.dark' },
+                      width: 60,
+                      height: 60,
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={handleLike}
+                    sx={{
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      '&:hover': { bgcolor: 'primary.dark' },
+                      width: 60,
+                      height: 60,
+                    }}
+                  >
+                    <FavoriteIcon />
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </AnimatedCard>
+          </Box>
+
+          {likedCats.length > 0 && (
+            <Typography variant="body1" sx={{ mt: 2, color: 'text.secondary' }}>
+              You've liked {likedCats.length} cat{likedCats.length !== 1 ? 's' : ''}!
+            </Typography>
+          )}
+
+          <Snackbar
+            open={showMessage}
+            autoHideDuration={4000}
+            onClose={handleCloseMessage}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <Alert onClose={handleCloseMessage} severity="success" sx={{ width: '100%' }}>
+              {currentMessage}
+            </Alert>
+          </Snackbar>
+        </>
+      ) : (
+        <Box sx={{ width: '100%', height: '100%', maxWidth: 600, display: 'flex' }}>
+          {likedCats.length > 0 ? (
+            <>
+              <Box sx={{ width: '30%', borderRight: '1px solid #e0e0e0', overflow: 'auto' }}>
+                <List>
+                  {likedCats.map((cat, index) => (
+                    <React.Fragment key={cat.id}>
+                      <ListItem 
+                        button 
+                        onClick={() => setSelectedCat(cat)}
+                        sx={{
+                          bgcolor: selectedCat?.id === cat.id ? 'primary.light' : 'transparent',
+                          '&:hover': { bgcolor: 'primary.lighter' }
+                        }}
+                      >
+                        <ListItemAvatar>
+                          <Avatar src={cat.imageUrl} alt={cat.name} />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={cat.name}
+                          secondary={`${cat.breed}, ${cat.age}y`}
+                        />
+                      </ListItem>
+                      {index < likedCats.length - 1 && <Divider />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              </Box>
+              <Box sx={{ width: '70%', pl: 2 }}>
+                {selectedCat ? (
+                  <Messages cat={selectedCat} />
+                ) : (
+                  <Typography variant="h6" sx={{ textAlign: 'center', mt: 4 }}>
+                    Select a cat to start chatting!
+                  </Typography>
+                )}
+              </Box>
+            </>
+          ) : (
+            <Typography variant="h6" sx={{ textAlign: 'center', mt: 4 }}>
+              Like a cat first to start chatting!
+            </Typography>
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
